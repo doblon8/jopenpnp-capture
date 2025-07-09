@@ -2,6 +2,8 @@
 
 package io.github.doblon8.bindings;
 
+import io.github.doblon8.utils.NativeLoader;
+
 import java.lang.invoke.*;
 import java.lang.foreign.*;
 import java.util.*;
@@ -19,15 +21,15 @@ public class openpnp_capture {
     static final boolean TRACE_DOWNCALLS = Boolean.getBoolean("jextract.trace.downcalls");
 
     static void traceDowncall(String name, Object... args) {
-         String traceArgs = Arrays.stream(args)
-                       .map(Object::toString)
-                       .collect(Collectors.joining(", "));
-         System.out.printf("%s(%s)\n", name, traceArgs);
+        String traceArgs = Arrays.stream(args)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        System.out.printf("%s(%s)\n", name, traceArgs);
     }
 
     static MemorySegment findOrThrow(String symbol) {
         return SYMBOL_LOOKUP.find(symbol)
-            .orElseThrow(() -> new UnsatisfiedLinkError("unresolved symbol: " + symbol));
+                .orElseThrow(() -> new UnsatisfiedLinkError("unresolved symbol: " + symbol));
     }
 
     static MethodHandle upcallHandle(Class<?> fi, String name, FunctionDescriptor fdesc) {
@@ -52,8 +54,12 @@ public class openpnp_capture {
         };
     }
 
-    static final SymbolLookup SYMBOL_LOOKUP = SymbolLookup.libraryLookup("/tmp/libopenpnp-capture-ubuntu-20.04-x86_64.so", LIBRARY_ARENA)
-            .or(SymbolLookup.loaderLookup())
+    static {
+        NativeLoader.loadOpenpnpCapture();
+    }
+
+
+    static final SymbolLookup SYMBOL_LOOKUP = SymbolLookup.loaderLookup()
             .or(Linker.nativeLinker().defaultLookup());
 
     public static final ValueLayout.OfBoolean C_BOOL = ValueLayout.JAVA_BOOLEAN;
