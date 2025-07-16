@@ -10,6 +10,10 @@ import static io.github.doblon8.bindings.openpnp_capture.*;
 
 public class Main {
     public static void main(String[] args) {
+        Cap_getLibraryVersion capGetLibraryVersion = Cap_getLibraryVersion.makeInvoker();
+        String libraryVersion = capGetLibraryVersion.apply().getString(0);
+        System.out.println("OpenPnP Capture version: " + libraryVersion);
+
         CaptureContext context = createContext();
         int deviceCount = Cap_getDeviceCount(context.segment());
         System.out.println("Number of devices: " + deviceCount);
