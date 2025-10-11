@@ -54,13 +54,23 @@ public class openpnp_capture {
         };
     }
 
+    static final SymbolLookup SYMBOL_LOOKUP;
+
     static {
-        NativeLoader.loadOpenpnpCapture();
+        SymbolLookup lookup = null;
+        try {
+            // Try system library first
+            lookup = SymbolLookup.libraryLookup(System.mapLibraryName("openpnp-capture"), LIBRARY_ARENA)
+                    .or(SymbolLookup.loaderLookup())
+                    .or(Linker.nativeLinker().defaultLookup());
+        } catch (Throwable t) {
+            // Fallback to bundled library
+            NativeLoader.loadOpenpnpCapture();
+            lookup = SymbolLookup.loaderLookup()
+                    .or(Linker.nativeLinker().defaultLookup());
+        }
+        SYMBOL_LOOKUP = lookup;
     }
-
-
-    static final SymbolLookup SYMBOL_LOOKUP = SymbolLookup.loaderLookup()
-            .or(Linker.nativeLinker().defaultLookup());
 
     public static final ValueLayout.OfBoolean C_BOOL = ValueLayout.JAVA_BOOLEAN;
     public static final ValueLayout.OfByte C_CHAR = ValueLayout.JAVA_BYTE;
