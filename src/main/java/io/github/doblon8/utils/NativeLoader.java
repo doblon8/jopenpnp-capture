@@ -13,7 +13,13 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class NativeLoader {
-
+    /**
+     * Load the OpenPnP Capture native library for the current platform.
+     * <p>
+     * The library is loaded from the classpath and extracted to a temporary directory.
+     *
+     * @throws RuntimeException if loading the native library fails
+     */
     public static void loadOpenpnpCapture() {
         String os = getOsName();
         String arch = getArchName();
@@ -111,6 +117,11 @@ public class NativeLoader {
         return dir;
     }
 
+    /**
+     * Get the name of the current operating system.
+     *
+     * @return the OS name as a String, either "linux", "osx", or "windows"
+     */
     private static String getOsName() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("nux")) {
@@ -124,6 +135,11 @@ public class NativeLoader {
         }
     }
 
+    /**
+     * Get the name of the current architecture.
+     *
+     * @return the architecture name as a String, either "aarch64" or "x64"
+     */
     private static String getArchName() {
         String arch = System.getProperty("os.arch").toLowerCase();
         if (arch.contains("aarch64") || arch.contains("arm64")) {
